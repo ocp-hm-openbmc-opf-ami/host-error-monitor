@@ -1,0 +1,27 @@
+option(
+    'libpeci',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Enable use of old peci driver API via libpeci',
+)
+
+option(
+    'crashdump',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Enable use of the Intel Crashdump service',
+)
+
+option(
+    'tests',
+    type: 'feature',
+    value: 'enabled',
+    description: 'Enable unit tests',
+)
+
+option(
+    'send-to-logger',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Use D-Bus Logging interface for reporting',
+)
