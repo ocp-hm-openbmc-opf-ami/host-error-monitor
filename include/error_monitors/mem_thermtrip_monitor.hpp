@@ -34,7 +34,29 @@ class MemThermtripMonitor :
         std::string cpuNumber = "CPU " + std::to_string(cpuNum);
         std::string msg = cpuNumber + " Memory Thermal trip.";
 
-        log_message(LOG_ERR, msg, "OpenBMC.0.1.MemoryThermTrip", cpuNumber);
+        std::string severity =
+            "xyz.openbmc_project.Logging.Entry.Level.Critical";
+        auto bus = sdbusplus::bus::new_default_system();
+        sdbusplus::message::message m = bus.new_method_call(
+            "xyz.openbmc_project.Logging", "/xyz/openbmc_project/logging",
+            "xyz.openbmc_project.Logging.Create", "Create");
+        std::string messageID = "OpenBMC.0.1.CPUError";
+        std::string arg = "IERR";
+        std::string journalMsg = messageID + "," + arg;
+
+        std::map<std::string, std::string> additionalData;
+        additionalData["REDFISH_MESSAGE_ID"] = messageID;
+        additionalData["REDFISH_MESSAGE_ARGS"] = arg;
+        m.append(journalMsg, severity, additionalData);
+        try
+        {
+            bus.call(m);
+        }
+        catch (const sdbusplus::exception_t& e)
+        {
+            std::cerr << "Failed to create log entry: " << e.what()
+                      << std::endl;
+        }
         assertInterface->set_property("Asserted", true);
     }
 
