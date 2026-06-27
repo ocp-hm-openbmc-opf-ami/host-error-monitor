@@ -42,7 +42,12 @@ static void init()
         initialized = true;
         if (!error_monitors::startMonitors(io, conn))
         {
-            throw std::runtime_error("Failed to start signal monitors");
+            // One monitor failing to acquire a GPIO line must not crash the
+            // entire process and leave healthy monitors inactive.
+            // Continue running with the subset of monitors that started.
+            std::cerr
+                << "Warning: One or more signal monitors failed to start; "
+                   "continuing with available monitors\n";
         }
     }
 }
